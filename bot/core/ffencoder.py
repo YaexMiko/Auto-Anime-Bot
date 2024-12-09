@@ -14,9 +14,9 @@ from .reporter import rep
 
 ffargs = {
     '1080': Var.FFCODE_1080,
-    '720': Var.FFCODE_720,
     '360': Var.FFCODE_360,
     '480': Var.FFCODE_480,
+    '720': Var.FFCODE_720,
     }
 
 class FFEncoder:
