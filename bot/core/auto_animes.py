@@ -18,10 +18,10 @@ from .tguploader import TgUploader
 from .reporter import rep
 
 btn_formatter = {
-    '1080':'𝟭𝟬𝟴𝟬𝗽', 
-    '720':'𝟳𝟮𝟬𝗽',
+    '1080':'𝟭𝟬𝟴𝟬𝗽',
     '360':'360p',
     '480':'𝟰𝟴𝟬𝗽',
+    '720':'𝟳𝟮𝟬𝗽',
     }
 
 async def fetch_animes():
