@@ -41,10 +41,10 @@ class Var:
 
     RSS_ITEMS = getenv("RSS_ITEMS", "https://subsplease.org/rss/?r=1080").split()
     FSUB_CHATS = list(map(int, getenv('FSUB_CHATS').split()))
-    BACKUP_CHANNEL = getenv("BACKUP_CHANNEL") or ""
-    MAIN_CHANNEL = int(getenv("MAIN_CHANNEL"))
+    BACKUP_CHANNEL = getenv("BACKUP_CHANNEL", "-1002392729611") or ""
+    MAIN_CHANNEL = int(getenv("MAIN_CHANNEL", "2289975824"))
     LOG_CHANNEL = int(getenv("LOG_CHANNEL") or 0)
-    FILE_STORE = int(getenv("FILE_STORE"))
+    FILE_STORE = int(getenv("FILE_STORE", "-1002329208995"))
     ADMINS = list(map(int, getenv("ADMINS", "8108281129").split()))
     
     SEND_SCHEDULE = getenv("SEND_SCHEDULE", "False").lower() == "true"
