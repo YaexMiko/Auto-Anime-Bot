@@ -39,7 +39,7 @@ class Var:
         LOGS.critical('Important Variables Missing. Fill Up and Retry..!! Exiting Now...')
         exit(1)
 
-    RSS_ITEMS = getenv("RSS_ITEMS", "https://subsplease.org/rss/?r=1080").split()
+    RSS_ITEMS = getenv("RSS_ITEMS", "https://nyaa.si/?page=rss&u=varyg1001").split()
     FSUB_CHATS = list(map(int, getenv('FSUB_CHATS').split()))
     BACKUP_CHANNEL = getenv("BACKUP_CHANNEL", "-1002392729611") or ""
     MAIN_CHANNEL = int(getenv("MAIN_CHANNEL", "-1002312618185"))
