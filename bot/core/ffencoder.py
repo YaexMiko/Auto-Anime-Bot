@@ -1,7 +1,7 @@
 from re import findall 
 from math import floor
 from time import time
-from os import path as ospath
+from os import path as ospath, stat
 from aiofiles import open as aiopen
 from aiofiles.os import remove as aioremove, rename as aiorename
 from shlex import split as ssplit
@@ -31,6 +31,12 @@ class FFEncoder:
         self.out_path = ospath.join("encode", name)
         self.__prog_file = 'prog.txt'
         self.__start_time = time()
+
+    async def validate_output(self, path):
+        try:
+            return ospath.exists(path) and stat(path).st_size > 0
+        except OSError:
+            return False
 
     async def progress(self):
         self.__total_time = await mediainfo(self.dl_path, get_duration=True)
@@ -88,14 +94,19 @@ class FFEncoder:
         await aiorename(dl_npath, self.dl_path)
         
         if self.is_cancelled:
-            return
-        
+            return None
+
         if return_code == 0:
-            if ospath.exists(out_npath):
+            if await self.validate_output(out_npath):
                 await aiorename(out_npath, self.out_path)
-            return self.out_path
+                return self.out_path
+            else:
+                await rep.report("Encoding produced empty/invalid file", "error")
+                return None
         else:
-            await rep.report((await self.__proc.stderr.read()).decode().strip(), "error")
+            error_msg = (await self.__proc.stderr.read()).decode().strip()
+            await rep.report(f"Encoding failed: {error_msg}", "error")
+            return None
             
     async def cancel_encode(self):
         self.is_cancelled = True
