@@ -53,7 +53,7 @@ async def get_animes(name, torrent, force=False):
         if not force and ani_id in ani_cache['completed']:
             return
             
-        if force or (not (ani_data := await db.getAnime(ani_id)) \
+        if force or (not (ani_data := await db.getAnime(ani_id))) \
             or (ani_data and not (qual_data := ani_data.get(ep_no))) \
             or (ani_data and qual_data and not all(qual for qual in qual_data.values())):
             
