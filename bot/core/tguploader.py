@@ -1,7 +1,7 @@
 from time import time, sleep
 from traceback import format_exc
 from math import floor
-from os import path as ospath
+from os import path as ospath, stat
 from aiofiles.os import remove as aioremove
 from pyrogram.errors import FloodWait
 
@@ -19,12 +19,29 @@ class TgUploader:
         self.__start = time()
         self.__updater = time()
 
+    async def validate_file(self, path):
+        try:
+            file_size = stat(path).st_size
+            if file_size == 0:
+                await rep.report(f"Empty file detected: {path}", "error")
+                return False
+            return True
+        except OSError as e:
+            await rep.report(f"File validation failed: {e}", "error")
+            return False
+
     async def upload(self, path, qual):
         self.__name = ospath.basename(path)
         self.__qual = qual
+        
+        if not await self.validate_file(path):
+            await aioremove(path)
+            return None
+
         try:
             if Var.AS_DOC:
-                return await self.__client.send_document(chat_id=Var.FILE_STORE,
+                return await self.__client.send_document(
+                    chat_id=Var.FILE_STORE,
                     document=path,
                     thumb="thumb.jpg" if ospath.exists("thumb.jpg") else None,
                     caption=f"<i>{self.__name}</i>",
@@ -32,15 +49,16 @@ class TgUploader:
                     progress=self.progress_status
                 )
             else:
-                return await self.__client.send_video(chat_id=Var.FILE_STORE,
-                    document=path,
+                return await self.__client.send_video(
+                    chat_id=Var.FILE_STORE,
+                    video=path,
                     thumb="thumb.jpg" if ospath.exists("thumb.jpg") else None,
                     caption=f"<i>{self.__name}</i>",
                     progress=self.progress_status
                 )
         except FloodWait as e:
             sleep(e.value * 1.5)
-            return await upload(path, qual, thumbnail)
+            return await self.upload(path, qual)
         except Exception as e:
             await rep.report(format_exc(), "error")
             raise e
