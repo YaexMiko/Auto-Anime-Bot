@@ -1,4 +1,4 @@
-from os import path as ospath, mkdir, system, getenv
+from os import path as ospath, mkdir, system, getenv, statvfs
 from logging import INFO, ERROR, FileHandler, StreamHandler, basicConfig, getLogger
 from traceback import format_exc
 from asyncio import Queue, Lock
@@ -19,6 +19,15 @@ getLogger("pyrogram").setLevel(ERROR)
 LOGS = getLogger(__name__)
 
 load_dotenv('config.env')
+
+def check_disk_space():
+    stat = statvfs('/')
+    free_space = stat.f_bavail * stat.f_frsize
+    return free_space > 500 * 1024 * 1024  # 500MB minimum
+
+if not check_disk_space():
+    LOGS.critical('Insufficient disk space! Need at least 500MB free.')
+    exit(1)
 
 ani_cache = {
     'fetch_animes': True,
