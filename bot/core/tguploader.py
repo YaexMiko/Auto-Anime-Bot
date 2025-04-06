@@ -38,12 +38,26 @@ class TgUploader:
             await aioremove(path)
             return None
 
+        thumb_path = "thumb.jpg"
+        thumb_exists = ospath.exists(thumb_path)
+        thumb_valid = False
+
+        if thumb_exists:
+            try:
+                thumb_size = stat(thumb_path).st_size
+                if thumb_size > 0:
+                    thumb_valid = True
+                else:
+                    await rep.report(f"Thumbnail file is empty: {thumb_path}", "error")
+            except OSError as e:
+                await rep.report(f"Thumbnail validation failed: {e}", "error")
+
         try:
             if Var.AS_DOC:
                 return await self.__client.send_document(
                     chat_id=Var.FILE_STORE,
                     document=path,
-                    thumb="thumb.jpg" if ospath.exists("thumb.jpg") else None,
+                    thumb=thumb_path if thumb_valid else None,
                     caption=f"<i>{self.__name}</i>",
                     force_document=True,
                     progress=self.progress_status
@@ -52,7 +66,7 @@ class TgUploader:
                 return await self.__client.send_video(
                     chat_id=Var.FILE_STORE,
                     video=path,
-                    thumb="thumb.jpg" if ospath.exists("thumb.jpg") else None,
+                    thumb=thumb_path if thumb_valid else None,
                     caption=f"<i>{self.__name}</i>",
                     progress=self.progress_status
                 )
